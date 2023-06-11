@@ -87,10 +87,10 @@ class ModelPredictor:
         feature_df.to_parquet(output_file_path, index=False)
         return output_file_path
 
-
 class PredictorApi:
-    def __init__(self, predictor: ModelPredictor):
-        self.predictor = predictor
+    def __init__(self, predictor1: ModelPredictor, predictor2: ModelPredictor):
+        self.predictor1 = predictor1
+        self.predictor2 = predictor2
         self.app = FastAPI()
 
         @self.app.get("/")
@@ -98,9 +98,15 @@ class PredictorApi:
             return {"message": "hello"}
 
         @self.app.post("/phase-1/prob-1/predict")
-        async def predict(data: Data, request: Request):
+        async def predict1(data: Data, request: Request):
             self._log_request(request)
-            response = self.predictor.predict(data)
+            response = self.predictor1.predict(data)
+            self._log_response(response)
+            return response
+        @self.app.post("/phase-1/prob-2/predict")
+        async def predict2(data: Data, request: Request):
+            self._log_request(request)
+            response = self.predictor2.predict(data)
             self._log_response(response)
             return response
 
@@ -112,23 +118,26 @@ class PredictorApi:
     def _log_response(response: dict):
         pass
 
-    def run(self, port):
-        uvicorn.run(self.app, host="0.0.0.0", port=port)
+def run(port):
+    uvicorn.run("model_predictor:PredictorAPI", host="0.0.0.0", port=port, workers=4)
 
+
+default_config_path = (
+    AppPath.MODEL_CONFIG_DIR
+    / ProblemConst.PHASE1
+    / ProblemConst.PROB1
+    / "model-1.yaml"
+).as_posix()
+config_path_prob2 = (
+    AppPath.MODEL_CONFIG_DIR
+    / ProblemConst.PHASE1
+    / "prob-2"
+    / "model-1.yaml"
+).as_posix()
+
+predictor1 = ModelPredictor(config_file_path=default_config_path)
+predictor2 = ModelPredictor(config_file_path=config_path_prob2)
+api = PredictorApi(predictor1, predictor2)
 
 if __name__ == "__main__":
-    default_config_path = (
-        AppPath.MODEL_CONFIG_DIR
-        / ProblemConst.PHASE1
-        / ProblemConst.PROB1
-        / "model-1.yaml"
-    ).as_posix()
-
-    parser = argparse.ArgumentParser()
-    parser.add_argument("--config-path", type=str, default=default_config_path)
-    parser.add_argument("--port", type=int, default=PREDICTOR_API_PORT)
-    args = parser.parse_args()
-
-    predictor = ModelPredictor(config_file_path=args.config_path)
-    api = PredictorApi(predictor)
-    api.run(port=args.port)
+    uvicorn.run("model_predictor:api.app", host="0.0.0.0", port=8000, workers=4)

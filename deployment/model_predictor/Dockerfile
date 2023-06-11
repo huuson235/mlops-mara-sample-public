@@ -1,9 +1,4 @@
-FROM python:3.9-slim
-
-RUN apt-get update
-
-RUN python -m venv /opt/venv
-ENV PATH="/opt/venv/bin:$PATH"
+FROM python:3.10-slim
 
 COPY deployment/model_predictor/requirements.txt .
 RUN pip install --upgrade wheel setuptools pip
