@@ -140,4 +140,4 @@ predictor2 = ModelPredictor(config_file_path=config_path_prob2)
 api = PredictorApi(predictor1, predictor2)
 
 if __name__ == "__main__":
-    uvicorn.run("model_predictor:api.app", host="0.0.0.0", port=8000, workers=4)
+    uvicorn.run("model_predictor:api.app", host="0.0.0.0", port=8000, workers=1)
