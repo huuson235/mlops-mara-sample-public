@@ -171,12 +171,6 @@ poetry.toml
 .ruff_cache/
 
 ### VisualStudioCode ###
-.vscode/*
-!.vscode/settings.json
-!.vscode/tasks.json
-!.vscode/launch.json
-!.vscode/extensions.json
-!.vscode/*.code-snippets
 
 # Local History for Visual Studio Code
 .history/
@@ -191,7 +185,8 @@ poetry.toml
 
 # End of https://www.toptal.com/developers/gitignore/api/python,visualstudiocode
 
-.vscode
 .idea
 
 mlruns
+temp_auto_push.bat
+temp_interactive_push.bat
