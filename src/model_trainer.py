@@ -17,7 +17,7 @@ from utils import AppConfig
 
 
 class ModelTrainer:
-    EXPERIMENT_NAME = "xgb-1"
+    EXPERIMENT_NAME = "model-1"
 
     @staticmethod
     def train_model(prob_config: ProblemConfig, model_params, add_captured_data=False):
